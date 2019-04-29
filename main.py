@@ -32,20 +32,18 @@ class Blog(db.Model):
         self.title = title
         self.body = body
 
-    def __repr__(self):
-        return '<%r \n %r>' % (self.title, self.body)
-
 @app.route('/blog', methods=['GET'])
 def blog():
-    blog_id = request.args.get('id')
-    if blog_id is not None:
-        blog = Blog.query(id=blog_id)
-        return render_template('dynamic_blog.html', site_title=Blog.title, 
-            blog=blog)
-    else:
-        blogs = Blog.query.all()
-        return render_template('blog.html', site_title="Blog Listings", 
-            blogs=blogs)
+    blog_id = request.args.get("id")
+    blog = Blog.query.filter_by(id=blog_id).first()
+    return render_template('dynamic_blog.html', site_title="Blog post", 
+        blog=blog)
+        
+@app.route('/', methods=['GET'])
+def index():       
+    blogs = Blog.query.all()
+    return render_template('blog.html', site_title="Blog Listings", 
+        blogs=blogs)
 
 
 @app.route('/newpost', methods=['GET'])
@@ -74,8 +72,10 @@ def validate_newpost():
     new_blog = Blog(blog_title, blog_body)
     db.session.add(new_blog)
     db.session.commit()
+
+    new_post_id = new_blog.id
     
-    return redirect('/blog')
+    return redirect('/blog?id={0}'.format(new_post_id))
 
 
 if __name__ == '__main__':
