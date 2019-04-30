@@ -2,8 +2,17 @@ p, h1, h2, h3, h4, h5, h6, a {
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 
         'Lucida Grande', 'Lucida Sans Unicode', 
         Geneva, Verdana, sans-serif;
+    color:#004d99
+}
+
+body {
+    background-color:#99ccff
+}
+  
+a:visited {
+    color:#004d99
 }
 
 .error {
-    color: #ce2626;
+    color: #4d0099
 }
