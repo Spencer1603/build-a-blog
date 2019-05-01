@@ -36,48 +36,47 @@ class Blog(db.Model):
 
 @app.route('/blog', methods=['GET'])
 def blog():
-    blog_id = request.args.get("id")
-    blog = Blog.query.filter_by(id=blog_id).first()
-    return render_template('dynamic_blog.html', site_title="Blog post", 
-        blog=blog)
+    if "id" in request.args:
+        blog_id = request.args.get("id")
+        blog = Blog.query.filter_by(id=blog_id).first()
+        return render_template('dynamic_blog.html', site_title="Blog post", 
+            blog=blog)
         
-@app.route('/', methods=['GET'])
-def index():       
-    blogs = Blog.query.all()
-    return render_template('blog.html', site_title="Blog Listings", 
-        blogs=blogs)
+    else:   
+        blogs = Blog.query.all()
+        return render_template('blog.html', site_title="Blog Listings", 
+            blogs=blogs)
 
 
-@app.route('/newpost', methods=['GET'])
+@app.route('/newpost', methods=['GET', 'POST'])
 def newpost():
-    
-    return render_template('newpost.html', site_title="Create a Blog Post")
+    if request.method == 'GET':
+        return render_template('newpost.html', site_title="Create a Blog Post")
 
-@app.route('/newpost', methods=['POST'])
-def validate_newpost():
-    blog_title = request.form['blog_title']
-    blog_body = request.form['blog_body']
+    else:
+        blog_title = request.form['blog_title']
+        blog_body = request.form['blog_body']
 
-    title_error = ""
-    body_error = ""
+        title_error = ""
+        body_error = ""
 
-    if blog_title == "":
-        title_error = "Please enter a title"
-    if blog_body == "":
-        body_error = "Please enter a body"
+        if blog_title == "":
+            title_error = "Please enter a title"
+        if blog_body == "":
+            body_error = "Please enter a body"
 
-    if blog_title == "" or blog_body == "":
-        return render_template('newpost.html', site_title="Create a Blog Post", 
-        blog_title=blog_title, title_error=title_error, 
-        blog_body=blog_body, body_error=body_error)
+        if blog_title == "" or blog_body == "":
+            return render_template('newpost.html', site_title="Create a Blog Post", 
+            blog_title=blog_title, title_error=title_error, 
+            blog_body=blog_body, body_error=body_error)
 
-    new_blog = Blog(blog_title, blog_body)
-    db.session.add(new_blog)
-    db.session.commit()
+        new_blog = Blog(blog_title, blog_body)
+        db.session.add(new_blog)
+        db.session.commit()
 
-    new_post_id = new_blog.id
-    
-    return redirect('/blog?id={0}'.format(new_post_id))
+        new_post_id = new_blog.id
+        
+        return redirect('/blog?id={0}'.format(new_post_id))
 
 
 if __name__ == '__main__':
